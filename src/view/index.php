@@ -1,156 +1,183 @@
 <?php
 session_start();
+include("config/db.php");
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>FTP Server</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISP FTP Server</title>
 
     <style>
 
-        body{
-            font-family: Arial;
+        *{
             margin: 0;
             padding: 0;
-            background: #f4f4f4;
+            box-sizing: border-box;
         }
 
-        .navbar{
-            background: black;
-            padding: 15px;
+        body{
+            font-family: sans-serif;
+            background-color: #eef2f7;
         }
 
-        .navbar a{
+        header{
+            background: #1e293b;
+            color: white;
+            padding: 20px;
+        }
+
+        .menu{
+            margin-top: 10px;
+        }
+
+        .menu a{
             color: white;
             text-decoration: none;
             margin-right: 20px;
-            font-size: 18px;
         }
 
         .container{
-            width: 90%;
+            width: 85%;
             margin: auto;
-            margin-top: 30px;
+            padding: 30px 0;
         }
 
-        .card{
+        .top-section{
             background: white;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 30px;
             border-radius: 10px;
+            margin-bottom: 25px;
         }
 
-        h1{
-            color: #333;
+        .top-section h1{
+            margin-bottom: 10px;
         }
 
-        .btn{
-            background: green;
+        .content-box{
+            background: white;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 5px solid #2563eb;
+            border-radius: 8px;
+        }
+
+        .content-box h2{
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .content-box p{
+            margin-bottom: 8px;
+        }
+
+        .download-btn{
+            display: inline-block;
+            padding: 10px 18px;
+            background: #2563eb;
             color: white;
-            padding: 8px 15px;
             text-decoration: none;
             border-radius: 5px;
         }
 
+        .download-btn:hover{
+            background: #1d4ed8;
+        }
+
     </style>
+
 </head>
 <body>
 
-    <!-- Navbar -->
+<header>
 
-    <div class="navbar">
+    <h2>FTP Media Server</h2>
+
+    <div class="menu">
 
         <a href="index.php">Home</a>
 
         <?php
         if(isset($_SESSION['role'])){
 
-            if($_SESSION['role'] == 'admin'){
-                ?>
-
-                <a href="views/admin/dashboard.php">
-                    Dashboard
-                </a>
-
-                <a href="views/admin/moderators.php">
-                    Manage Moderators
-                </a>
-
-                <a href="views/admin/contents.php">
-                    Manage Contents
-                </a>
-
-                <a href="logout.php">
-                    Logout
-                </a>
-
-                <?php
+            if($_SESSION['role'] == "admin"){
+                echo '<a href="views/admin/dashboard.php">Dashboard</a>';
+                echo '<a href="views/admin/addContent.php">Upload Content</a>';
+                echo '<a href="views/admin/moderators.php">Moderators</a>';
             }
 
+            echo '<a href="logout.php">Logout</a>';
+
         }else{
-            ?>
-
-            <a href="login.php">Login</a>
-
-            <?php
+            echo '<a href="login.php">Login</a>';
         }
         ?>
 
     </div>
 
-    <!-- Main Section -->
+</header>
 
-    <div class="container">
+<div class="container">
 
-        <h1>FTP Media Content Server</h1>
+    <div class="top-section">
+
+        <h1>Welcome to ISP FTP Content Service</h1>
 
         <p>
-            Browse Movies, Software, TV Series, Games and more.
+            Download Movies, Games, TV Series, Software and many more files.
         </p>
 
-        <?php
+    </div>
 
-        include('config/db.php');
+    <?php
 
-        $sql = "SELECT contents.*, categories.name AS category_name
-                FROM contents
-                JOIN categories
-                ON contents.category_id = categories.id
-                ORDER BY uploaded_at DESC";
+    $sql = "SELECT contents.*, categories.name AS categoryName
+            FROM contents
+            JOIN categories
+            ON contents.category_id = categories.id
+            ORDER BY contents.id DESC";
 
-        $result = $conn->query($sql);
+    $result = $conn->query($sql);
 
-        while($row = $result->fetch_assoc()){
-        ?>
+    if($result->num_rows > 0){
 
-        <div class="card">
+        while($data = $result->fetch_assoc()){
+    ?>
+
+        <div class="content-box">
 
             <h2>
-                <?php echo $row['title']; ?>
+                <?php echo htmlspecialchars($data['title']); ?>
             </h2>
 
             <p>
-                <?php echo $row['description']; ?>
+                <?php echo htmlspecialchars($data['description']); ?>
             </p>
 
             <p>
-                Category:
-                <?php echo $row['category_name']; ?>
+                <strong>Category:</strong>
+                <?php echo $data['categoryName']; ?>
             </p>
 
-            <a class="btn"
-               href="<?php echo $row['file_path']; ?>">
-               Download
+            <a class="download-btn"
+               href="<?php echo $data['file_path']; ?>">
+               Download File
             </a>
 
         </div>
 
-        <?php
+    <?php
         }
-        ?>
 
-    </div>
+    }else{
+        echo "<h3>No Content Available</h3>";
+    }
+
+    ?>
+
+</div>
 
 </body>
 </html>
