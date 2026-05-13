@@ -1,8 +1,8 @@
-```php id="u9p3kr"
 <?php
 
 session_start();
-include("src/config/db.php");
+include("../src/config/db.php");
+
 
 ?>
 
