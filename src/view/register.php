@@ -125,11 +125,9 @@
                     value="<?= htmlspecialchars($old['email'] ?? '') ?>" required>
                 <div id="emailStatus"></div>
 
-                <input type="password" name="password"
-                    placeholder="Password (min 8 chars)" id="pass1" required>
+                <input type="password" name="password" placeholder="Password (min 8 chars)" id="pass1" required>
 
-                <input type="password" name="confirm"
-                    placeholder="Confirm Password" id="pass2" required>
+                <input type="password" name="confirm" placeholder="Confirm Password" id="pass2" required>
                 <span id="matchMsg" class="hint"></span>
 
                 <select name="role" required>
@@ -205,7 +203,8 @@
                         if (result.exists) {
                             emailStatus.style.color = '#ff6b6b';
                             emailStatus.textContent = '✘ Email already registered';
-                        } else {
+                        } 
+                        else {
                             emailStatus.style.color = '#6bffb8';
                             emailStatus.textContent = '✔ Email is available';
                         }
@@ -227,7 +226,10 @@
         });
     </script>
 
-    <?php require_once __DIR__ . '/footer.php'; ?>
+    <footer>
+        <?php require_once __DIR__ . '/footer.php'; ?>
+    </footer>
+   
 </body>
 
 </html>
