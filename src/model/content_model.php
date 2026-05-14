@@ -25,4 +25,11 @@ function getContentsByCategory($pdo, $categoryId) {
     return $stmt->fetchAll();
 }
 
+function getSubCategoriesByParent($pdo, $parentId) {
+    $stmt = $pdo->prepare("SELECT id, name FROM categories WHERE parent_id = ? ORDER BY name ASC");
+    $stmt->execute([$parentId]);
+    return $stmt->fetchAll();
+}
+
+
 ?>
