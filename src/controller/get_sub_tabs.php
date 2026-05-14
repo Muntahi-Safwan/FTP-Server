@@ -1,29 +1,17 @@
 <?php
-// Connect to the database
-$conn = new mysqli("localhost", "root", "", "ftp_server");
+require_once '../model/category_model.php';
+$parent_id= $_GET['parent_id'] ?? "";
+$result = tamzSubtab($parent_id) ?? "";
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if (isset($_GET['parent_id'])) {
-    $parent_id = (int)$_GET['parent_id']; 
-
-    $sql = "SELECT id, name FROM categories WHERE parent_id = $parent_id";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        // Create an "All" button to reset the view
+if ($result !="" && mysqli_num_rows($result) > 0) {
+        
         echo "<button class='tab-btn' onclick='loadMainCategory($parent_id)'>All</button>";
         
-        // Loop through and create a button for each subcategory
-        while($row = $result->fetch_assoc()) {
+        while($row = mysqli_fetch_assoc($result)) {
             echo "<button class='tab-btn' onclick='filterBySub(" . $row['id'] . ")'>" . $row['name'] . "</button>";
         }
     } else {
         echo "<p class='no-data-msg'>No subcategories found.</p>";
     }
-}
 
-$conn->close();
 ?>
