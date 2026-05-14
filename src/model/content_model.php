@@ -8,7 +8,8 @@ function getHighlightedContents($pdo, $limit = 6) {
          ORDER BY c.download_count DESC, c.uploaded_at DESC
          LIMIT ?"
     );
-    $stmt->execute([$limit]);
+    $stmt->bindValue(1, (int)$limit, PDO::PARAM_INT);
+    $stmt->execute();
     return $stmt->fetchAll();
 }
 
@@ -23,3 +24,5 @@ function getContentsByCategory($pdo, $categoryId) {
     $stmt->execute([$categoryId, $categoryId]);
     return $stmt->fetchAll();
 }
+
+?>
