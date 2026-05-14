@@ -10,7 +10,7 @@ $role = $_SESSION['role'] ?? 'guest';
         <?php if ($role === 'admin'): ?>
             <a href="index.php?page=home" style="color:#fff; text-decoration:none;">Home</a>
             <a href="index.php?page=profile" style="color:#fff; text-decoration:none;">Profile</a>
-            <a href="index.php?page=admin" style="color:#e94560; text-decoration:none;">Admin Panel</a>
+            <a href="index.php?page=adminView" style="color:#e94560; text-decoration:none;">Admin Panel</a>
             <a href="index.php?page=logout" style="color:#aaa;  text-decoration:none;">Logout</a>
 
         <?php elseif ($role === 'moderator'): ?>
@@ -22,6 +22,10 @@ $role = $_SESSION['role'] ?? 'guest';
         <?php else: ?>
             <!-- Guest/Member: browse only, no login link -->
             <a href="index.php?page=home" style="color:#fff; text-decoration:none;">Home</a>
+            <a href="index.php?page=login"
+                style="color:#fff; text-decoration:none; font-size:12px;">
+                Staff Login
+            </a>
         <?php endif; ?>
 
     </div>

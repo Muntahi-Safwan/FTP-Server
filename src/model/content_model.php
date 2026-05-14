@@ -1,7 +1,8 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . "/../config/db.php";
 
-function dbConnection() {
+function dbConnection()
+{
     global $pdo;
     return $pdo;
 }
