@@ -74,7 +74,11 @@ function handleLogin($pdo)
         setcookie('remember_token', $token, time() + (7 * 24 * 3600), '/');
     }
 
+   if ($user['role'] === 'admin') {
+    header("Location: index.php?page=admin/dashboard");
+} else {
     header("Location: index.php?page=home");
+}
     exit;
 }
 
