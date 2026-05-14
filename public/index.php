@@ -8,13 +8,10 @@ require_once __DIR__ . '/../src/controller/auth_controller.php';
 require_once __DIR__ . '/../src/controller/home_controller.php';
 require_once __DIR__ . '/../src/controller/profile_controller.php';
 
-
-
 // ── AJAX: check email availability ──────────────────
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'check_email') {
     header('Content-Type: application/json');
 
-    // Read the JSON string sent as POST body
     $raw  = $_POST['user'] ?? '{}';
     $data = json_decode($raw, true);
 
@@ -22,6 +19,17 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'check_email') {
     $exists = emailExists($pdo, $email) ? true : false;
 
     echo json_encode(['exists' => $exists]);
+    exit;
+}
+
+// ── AJAX: sub-categories for dependent dropdown ─────
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'subcategories') {
+    require_once __DIR__ . '/../src/model/category_model.php';
+    header('Content-Type: application/json');
+
+    $parentId = (int) ($_GET['parent_id'] ?? 0);
+    $rows = $parentId > 0 ? getSubCategories($pdo, $parentId) : [];
+    echo json_encode($rows ?: []);
     exit;
 }
 
@@ -68,10 +76,11 @@ switch ($page) {
         require_once __DIR__ . '/../src/view/adminView.php';
         break;
 
-    case 'modView':
+    case 'moderator':
         requireRole('moderator');
-        require_once __DIR__ . '/../src/view/adminView.php';
-        break;
+        header('Location: ../src/view/moderator/dashboard_view.php');
+        exit;
+
     case 'home':
     default:
         showHome($pdo);
