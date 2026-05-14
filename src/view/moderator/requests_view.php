@@ -1,15 +1,18 @@
 <?php
-session_start();
 require_once __DIR__ . '/../../includes/moderator_check.php';
+require_once __DIR__ . '/../../includes/csrf.php';
+require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../model/request_model.php';
 
-$requests = getAllRequests();
+$requests = getAllRequests($pdo);
+$csrf     = csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf) ?>">
     <title>Content Requests — FTP Server</title>
     <link rel="stylesheet" href="../../assets/css/moderator.css">
 </head>
@@ -18,8 +21,14 @@ $requests = getAllRequests();
 
     <?php require_once __DIR__ . '/../layouts/sidebar.php'; ?>
 
-    <div class="main-content">
-        <h1>Content Requests</h1>
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1>Content Requests</h1>
+                <p class="lead">Review pending requests from members. Mark each as fulfilled or rejected.</p>
+            </div>
+        </header>
+
         <div id="response"></div>
 
         <div class="filter-bar">
@@ -46,40 +55,40 @@ $requests = getAllRequests();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if ($requests && is_array($requests)): foreach ($requests as $r): ?>
-                    <tr data-status="<?= htmlspecialchars($r['status'] ?? 'pending') ?>">
-                        <td><?= $r['id'] ?></td>
-                        <td><?= htmlspecialchars($r['requester_ip'] ?? $r['member_name'] ?? 'Guest') ?></td>
-                        <td><?= htmlspecialchars($r['content_title'] ?? $r['request_text'] ?? '') ?></td>
+                    <?php if ($requests && is_array($requests) && count($requests) > 0): foreach ($requests as $r): ?>
+                    <tr data-status="<?= htmlspecialchars($r['status'] ?? 'pending') ?>" data-row-id="<?= (int)$r['id'] ?>">
+                        <td><?= (int)$r['id'] ?></td>
+                        <td><?= htmlspecialchars($r['requester_ip'] ?? 'Guest') ?></td>
+                        <td><?= htmlspecialchars($r['content_title'] ?? '') ?></td>
                         <td><?= htmlspecialchars($r['category_requested'] ?? '') ?></td>
                         <td><?= htmlspecialchars($r['message'] ?? '') ?></td>
-                        <td>
+                        <td class="status-cell">
                             <span class="badge badge-<?= htmlspecialchars($r['status'] ?? 'pending') ?>">
                                 <?= htmlspecialchars($r['status'] ?? 'pending') ?>
                             </span>
                         </td>
-                        <td><?= $r['created_at'] ?? '' ?></td>
-                        <td>
+                        <td><?= htmlspecialchars($r['created_at'] ?? '') ?></td>
+                        <td class="action-cell">
                             <?php if (($r['status'] ?? 'pending') === 'pending'): ?>
-                                <button class="btn btn-success btn-sm" onclick="return updateRequestStatus('<?= $r['id'] ?>', 'fulfilled')">Fulfill</button>
-                                <button class="btn btn-danger btn-sm" onclick="return updateRequestStatus('<?= $r['id'] ?>', 'rejected')">Reject</button>
+                                <button class="btn btn-success btn-sm" onclick="return updateRequestStatus(<?= (int)$r['id'] ?>, 'fulfilled')">Fulfill</button>
+                                <button class="btn btn-danger btn-sm" onclick="return updateRequestStatus(<?= (int)$r['id'] ?>, 'rejected')">Reject</button>
                             <?php else: ?>
-                                <span style="color: var(--text-muted); font-size: 13px;">—</span>
+                                <span style="color: var(--text-muted); font-size: 13px;">&mdash;</span>
                             <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; else: ?>
                     <tr>
                         <td colspan="8" class="empty-state">
-                            <div class="icon">&#9993;</div>
-                            <div>No requests found.</div>
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.35; margin-bottom:12px;"><path d="M4 6h16v12H4z"/><polyline points="4 6 12 13 20 6"/></svg>
+                            <div>No requests yet.</div>
                         </td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
-    </div>
+    </main>
 
     <?php require_once __DIR__ . '/../footer.php'; ?>
     <script src="../../assets/js/moderatorRequest.js"></script>
