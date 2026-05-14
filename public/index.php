@@ -6,6 +6,8 @@ session_start();
 require_once __DIR__ . '/../src/config/db.php';
 require_once __DIR__ . '/../src/controller/auth_controller.php';
 require_once __DIR__ . '/../src/controller/home_controller.php';
+require_once __DIR__ . '/../src/controller/profile_controller.php';
+
 
 
 // ── AJAX: check email availability ──────────────────
@@ -62,12 +64,14 @@ switch ($page) {
         break;
 
     case 'adminView':
-        require_once __DIR__ . '/../src/view/adminView.php';
-        break;
-    case 'modView':
+        requireRole('admin');
         require_once __DIR__ . '/../src/view/adminView.php';
         break;
 
+    case 'modView':
+        requireRole('moderator');
+        require_once __DIR__ . '/../src/view/adminView.php';
+        break;
     case 'home':
     default:
         showHome($pdo);
