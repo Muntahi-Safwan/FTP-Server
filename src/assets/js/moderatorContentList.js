@@ -1,42 +1,44 @@
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
 function showResponse(message, type) {
-    const box = document.getElementById("response");
-    const alertClass = type === 'success' ? 'alert-success' : (type === 'error' ? 'alert-error' : 'alert-info');
-    box.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+    const box = document.getElementById('response');
+    if (!box) return;
+    const cls = type === 'success' ? 'alert-success' : (type === 'error' ? 'alert-error' : 'alert-info');
+    box.innerHTML = `<div class="alert ${cls}">${message}</div>`;
 }
 
 function clearResponse(delay = 3000) {
     setTimeout(() => {
-        document.getElementById("response").innerHTML = "";
+        const box = document.getElementById('response');
+        if (box) box.innerHTML = '';
     }, delay);
 }
 
-function deleteContent(id) {
-    if (!confirm("Are you sure you want to delete this content?")) return false;
+async function deleteContent(id) {
+    if (!confirm('Are you sure you want to delete this content?')) return false;
 
-    let data = {
-        id: id,
-    };
-    let payload = JSON.stringify(data);
+    try {
+        const res = await fetch('../../controller/moderatorDeleteContent.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ id: id, csrf: csrfToken })
+        });
+        const data = await res.json().catch(() => ({ ok: false, error: 'Server returned non-JSON response.' }));
 
-    let xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "../controller/moderatorDeleteContent.php", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("data=" + encodeURIComponent(payload));
-
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            let resp = this.responseText.trim();
-            if (resp.includes('successfully')) {
-                showResponse(resp, 'success');
-                setTimeout(function () {
-                    window.location.reload();
-                }, 1200);
-            } else {
-                showResponse(resp, 'error');
-                clearResponse();
-            }
+        if (res.ok && data.ok) {
+            showResponse(data.message || 'Content deleted.', 'success');
+            setTimeout(() => window.location.reload(), 800);
+        } else {
+            showResponse(data.error || 'Failed to delete content.', 'error');
+            clearResponse();
         }
-    };
-
+    } catch (err) {
+        showResponse('Network error: ' + err.message, 'error');
+        clearResponse();
+    }
     return false;
 }
