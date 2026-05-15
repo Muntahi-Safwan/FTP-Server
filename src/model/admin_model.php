@@ -26,39 +26,6 @@ function getAllContentsWithUploader($pdo) {
     return $stmt->fetchAll();
 }
 
-function getContentById($pdo, $id) {
-    $stmt = $pdo->prepare("SELECT * FROM contents WHERE id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetch();
-}
-
-function addContent($pdo, $title, $desc, $filePath, $catId, $uploaderId) {
-    $stmt = $pdo->prepare("
-        INSERT INTO contents (title, description, file_path, category_id, uploader_id, download_count, uploaded_at)
-        VALUES (?, ?, ?, ?, ?, 0, NOW())
-    ");
-    return $stmt->execute([$title, $desc, $filePath, $catId, $uploaderId]);
-}
-
-function updateContent($pdo, $id, $title, $desc, $catId, $filePath = null) {
-    if ($filePath) {
-        $stmt = $pdo->prepare("UPDATE contents SET title=?, description=?, category_id=?, file_path=? WHERE id=?");
-        return $stmt->execute([$title, $desc, $catId, $filePath, $id]);
-    } else {
-        $stmt = $pdo->prepare("UPDATE contents SET title=?, description=?, category_id=? WHERE id=?");
-        return $stmt->execute([$title, $desc, $catId, $id]);
-    }
-}
-
-function deleteContentById($pdo, $id) {
-    $stmt = $pdo->prepare("SELECT file_path FROM contents WHERE id = ?");
-    $stmt->execute([$id]);
-    $file = $stmt->fetchColumn();
-    if ($file && file_exists($file)) unlink($file);
-    $stmt = $pdo->prepare("DELETE FROM contents WHERE id = ?");
-    return $stmt->execute([$id]);
-}
-
 function getPendingRequestsCount($pdo) {
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM content_requests WHERE status = 'pending'");
     $stmt->execute();
