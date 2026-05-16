@@ -1,9 +1,11 @@
 
+
+//////////////////////////////
+
 function loadMainCategory(mainId) {
     var tabsDiv = document.getElementById("subcategory_tabs");
     var contentDiv = document.getElementById("content_grid");
 
-    
     var xhrTabs = new XMLHttpRequest();
     xhrTabs.open("GET", "../controller/get_sub_tabs.php?parent_id=" + mainId, true);
     xhrTabs.onload = function() {
@@ -13,7 +15,6 @@ function loadMainCategory(mainId) {
     };
     xhrTabs.send();
 
-    
     var xhrContent = new XMLHttpRequest();
     xhrContent.open("GET", "../controller/get_contents.php?main_id=" + mainId, true);
     xhrContent.onload = function() {
@@ -28,7 +29,6 @@ function loadMainCategory(mainId) {
 function filterBySub(subId) {
     var contentDiv = document.getElementById("content_grid");
 
-    
     var xhrContent = new XMLHttpRequest();
     xhrContent.open("GET", "../controller/get_contents.php?sub_id=" + subId, true);
     xhrContent.onload = function() {
