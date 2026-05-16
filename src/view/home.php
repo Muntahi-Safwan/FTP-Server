@@ -14,6 +14,8 @@ if(!isset($_COOKIE["user_id"])) {
     <title>FTP Server Content</title>
     </head>
 <body>
+    <div id="div1"></div>
+    <button onclick="updateSessionFilter()">Set</button>
 
 <div class="main-container">
     <div id="sidebar" class="sidebar">
