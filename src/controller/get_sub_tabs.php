@@ -1,5 +1,5 @@
 <?php
-require_once '../model/category_model.php';
+require_once '../model/t_category_model.php';
 $parent_id= $_GET['parent_id'] ?? "";
 $result = tamzSubtab($parent_id) ?? "";
 

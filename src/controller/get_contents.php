@@ -1,6 +1,6 @@
 <?php
 
-    require('../model/content_model.php');
+    require('../model/t_content_model.php');
     $main_id = $_GET['main_id'] ?? "";
     $sub_id = $_GET['sub_id'] ?? "";
     $result = tamzContent($main_id, $sub_id) ?? "";
