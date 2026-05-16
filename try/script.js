@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "getres.php", true);
     
@@ -7,58 +6,108 @@ document.addEventListener("DOMContentLoaded", function() {
         if (xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
             var container = document.getElementById("divSF");
-            var radio = document.createElement("input");
-                radio.type = "radio";
-                radio.name = "category_radio"; // This groups them together
-                radio.value = 0;
-                radio.id = "cat_" + 0;
-                
-                // Create the label for the category name
-                var label = document.createElement("label");
-                label.htmlFor = "cat_" + 0;
-                label.textContent = "All";
-                
-                // Append to container with a line break
-                container.appendChild(radio);
-                container.appendChild(label);
+            
+            var radioAll = document.createElement("input");
+            radioAll.type = "radio";
+            radioAll.name = "category_radio";
+            radioAll.value = 0;
+            radioAll.id = "cat_0";
+            
+            var labelAll = document.createElement("label");
+            labelAll.htmlFor = "cat_0";
+            labelAll.textContent = "All";
+            
+            container.appendChild(radioAll);
+            container.appendChild(labelAll);
             
             for (var i = 0; i < data.length; i++) {
                 var item = data[i];
                 
-                // Create the radio button
                 var radio = document.createElement("input");
                 radio.type = "radio";
-                radio.name = "category_radio"; // This groups them together
+                radio.name = "category_radio";
                 radio.value = item.id;
                 radio.id = "cat_" + item.id;
                 
-                // Create the label for the category name
                 var label = document.createElement("label");
                 label.htmlFor = "cat_" + item.id;
                 label.textContent = item.name;
                 
-                // Append to container with a line break
                 container.appendChild(radio);
                 container.appendChild(label);
-               // container.appendChild(document.createElement("br"));
             }
         }
     };
     
     xhr.send();
 });
-let btnSet=document.getElementById('btnSet');
-btnSet.onclick=function () {
-    // Select the single radio button that is currently checked
+
+let btnSet = document.getElementById('btnSearch');
+
+btnSet.onclick = function() {
+    var keyword = document.getElementById('searhBox').value.trim();
+    
+    if (keyword === "") {
+        alert("Empty textbox");
+        return;
+    }
+    
+    sessionSet(function() {
+        var searchXhr = new XMLHttpRequest();
+        searchXhr.open("GET", "search.php?keyword=" + encodeURIComponent(keyword), true);
+        
+        searchXhr.onload = function() {
+            if (searchXhr.status === 200) {
+                var data = JSON.parse(searchXhr.responseText);
+                var tbody = document.getElementById("tbod");
+                tbody.innerHTML = ""; 
+                
+                for (let i = 0; i < data.length; i++) {
+                    let tr = document.createElement("tr");
+                    
+                    let tdTitle = document.createElement("td");
+                    tdTitle.textContent = data[i].title;
+                    
+                    let tdCount = document.createElement("td");
+                    tdCount.textContent ='('+ data[i].download_count +')';
+                    
+                    let tdPath = document.createElement("td");
+                    let ank = document.createElement("a");
+
+                    // ✅ FIX 1: use backticks + correct folder name
+                    ank.href = `../controller/downladM.php?des=${encodeURIComponent(data[i].file_path)}`;
+                    
+                    ank.innerText = "download";
+
+                    // ✅ FIX 2: append anchor, not textContent
+                    tdPath.appendChild(ank);
+                    
+                    tr.appendChild(tdTitle);
+                    tr.appendChild(tdPath);
+                    tr.appendChild(tdCount);
+                    
+                    tbody.appendChild(tr);
+                }
+            }
+        };
+        searchXhr.send();
+    });
+};
+
+function sessionSet(callback) {
     var selectedRadio = document.querySelector('input[name="category_radio"]:checked');
     
-    // Only send the request if a radio button was actually selected
     if (selectedRadio) {
         var id = selectedRadio.value;
         
         var sessionXhr = new XMLHttpRequest();
         sessionXhr.open("POST", "set_session.php", true);
         sessionXhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        sessionXhr.onload = function() {
+            if (callback) callback();
+        };
         sessionXhr.send("id=" + id);
+    } else {
+        if (callback) callback();
     }
 }

@@ -1,7 +1,4 @@
-<?php
-    session_start();
-    echo $_SESSION['filter_search'];
- ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +7,16 @@
     <title>Document</title>
 </head>
 <body>
+    
     <div id="divSF"></div>
-    <button id='btnSet' onclick="updateSessionFilter()">Set</button>
+    <input type="text" id="searhBox" value="">
+    <button id='btnSearch'>Search</button>
+    <table>
+        <tbody id="tbod">
+
+        </tbody>
+    </table>
+    
 
     <script src="script.js"></script>
     
