@@ -38,10 +38,22 @@ require_once 'db.php';
 
 } 
 
+
+
 function getFilter(){
     $conn = getConnect();
 
     $sql = "SELECT id, name FROM categories";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+    mysqli_close($conn);
+
+}
+
+function getMainFilter(){
+    $conn = getConnect();
+
+    $sql = "SELECT id, name FROM categories WHERE parent_id IS NULL";
     $result = mysqli_query($conn, $sql);
     return $result;
     mysqli_close($conn);

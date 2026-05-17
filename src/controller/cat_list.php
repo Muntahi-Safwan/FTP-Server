@@ -1,6 +1,16 @@
 <?php
-require_once('../model/t_category_model.php'); 
+require('../model/t_category_model.php');
 
-$categoryList = getFilter();
-echo json_encode($categoryList);
+$result = getMainFilter();
+
+$data = array();
+
+if ($result && mysqli_num_rows($result) > 0) {
+    while($row = mysqli_fetch_assoc($result)) {
+        $data[] = $row;
+    }
+}
+
+echo json_encode($data);
+
 ?>

@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "../controller/cat_list.php", true);
+    xhr.open("GET", "get_cat_list.php", true);
     
     xhr.onload = function() {
         if (xhr.status === 200) {
@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
             
             for (var i = 0; i < data.length; i++) {
                 var option = document.createElement("option");
+                
                 option.value = data[i].name;
                 option.textContent = data[i].name;
                 
