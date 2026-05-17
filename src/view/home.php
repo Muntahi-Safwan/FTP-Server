@@ -14,6 +14,10 @@ if(!isset($_COOKIE["user_id"])) {
     <title>FTP Server Content</title>
     </head>
 <body>
+    <a href="" id="login"><b>Log In</b></a> || 
+    <a href="ContentReq.html" id="Conreq">Request Content</a> ||
+    <a href="" id="req">Check Request</a>
+
     <div id="divSF"></div>
     <input type="text" id="searhBox" value="">
     <button id='btnSearch'>Search</button>
@@ -27,7 +31,7 @@ if(!isset($_COOKIE["user_id"])) {
 <!-- ////////////////////////////////////////////////////////////////////////// -->
 <div class="main-container">
     <div id="sidebar" class="sidebar">
-        <h3>Categories</h3>
+        <h3>Gallery</h3>
         <button class="sidebar-btn" onclick="loadMainCategory(1)">Movies</button>
         <button class="sidebar-btn" onclick="loadMainCategory(2)">Software</button>
         <button class="sidebar-btn" onclick="loadMainCategory(3)">TV Series</button>
@@ -39,7 +43,7 @@ if(!isset($_COOKIE["user_id"])) {
         <div id="subcategory_tabs" class="tabs-container"></div>
 
         <div id="content_grid" class="grid-container">
-            <p>Select a category from the left to view content.</p>
+            <p>Select a category to view content.</p>
         </div>
         
     </div>
