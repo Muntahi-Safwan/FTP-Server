@@ -59,5 +59,14 @@ function searchResult($choice, $keyword) {
 }
 
 
+function downloadInc($path) {
+    $conn = getConnect();
+    $sql = "UPDATE contents SET download_count = download_count + 1 WHERE file_path = '$path'";
+    mysqli_query($conn, $sql);
+    
+    mysqli_close($conn);
+}
+
+
 
 ?>

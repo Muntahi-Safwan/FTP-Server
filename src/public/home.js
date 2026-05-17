@@ -105,7 +105,7 @@ function performSearch(keyword) {
                 let tdPath = document.createElement("td");
                 let ank = document.createElement("a");
 
-                ank.href = `../controller/downladM.php?des=${encodeURIComponent(data[i].file_path)}`; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!change
+                ank.href = `../controller/downloadd.php?src=${encodeURIComponent(data[i].file_path)}`; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!change
                 ank.innerText = "download";
 
                 tdPath.appendChild(ank);
