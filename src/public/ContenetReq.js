@@ -1,4 +1,27 @@
+document.addEventListener("DOMContentLoaded", function() {
+    
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "../controller/cat_list.php", true);
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+            var selectCat = document.getElementById("cat");
+            
+            for (var i = 0; i < data.length; i++) {
+                var option = document.createElement("option");
+                option.value = data[i].name;
+                option.textContent = data[i].name;
+                
+                selectCat.appendChild(option);
+            }
+        }
+    };
+    xhr.send();
+});
+
 var submitBtn = document.getElementById("submit");
+
 submitBtn.onclick = function() {
     var title = document.getElementById("title").value.trim();
     var category = document.getElementById("cat").value.trim();
@@ -20,5 +43,4 @@ submitBtn.onclick = function() {
     }
 
     alert("Validation passed! The form is ready to be submitted.");
-    
 };
