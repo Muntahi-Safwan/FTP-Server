@@ -1,27 +1,7 @@
 <?php
 
 require_once 'db.php';    
-function getTopLevelCategories($pdo) {
-        $stmt = $pdo->prepare(
-            "SELECT * FROM categories WHERE parent_id IS NULL ORDER BY name ASC"
-        );
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
 
-    function getSubCategories($pdo, $parentId) {
-        $stmt = $pdo->prepare(
-            "SELECT * FROM categories WHERE parent_id = ? ORDER BY name ASC"
-        );
-        $stmt->execute([$parentId]);
-        return $stmt->fetchAll();
-    }
-
-    function getCategoryById($pdo, $id) {
-        $stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch();
-    }
 
     function tamzSubtab($parent_id){
         $conn = getConnect();
@@ -34,4 +14,37 @@ function getTopLevelCategories($pdo) {
 
         mysqli_close($conn);
     }
+
+    //////////////////////////////////////////////
+
+
+    function isParentIdNull($category_id) {
+    $conn = getConnect();
+
+    $id = (int)$category_id;
+    $sql = "SELECT parent_id FROM categories WHERE id = $id";
+    $result = mysqli_query($conn, $sql);
+
+    $is_null = false;
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        if (is_null($row['parent_id'])) {
+            $is_null = true;
+        }
+    }
+    
+    mysqli_close($conn);
+    return $is_null;
+
+} 
+
+function getFilter(){
+    $conn = getConnect();
+
+    $sql = "SELECT id, name FROM categories";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+    mysqli_close($conn);
+
+}
 ?>

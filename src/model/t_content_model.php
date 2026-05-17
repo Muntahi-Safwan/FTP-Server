@@ -1,29 +1,6 @@
 <?php
 require_once 'db.php';
 
-function getHighlightedContents($pdo, $limit = 6) {
-    $stmt = $pdo->prepare(
-        "SELECT c.*, cat.name AS category_name
-         FROM contents c
-         LEFT JOIN categories cat ON c.category_id = cat.id
-         ORDER BY c.download_count DESC, c.uploaded_at DESC
-         LIMIT ?"
-    );
-    $stmt->execute([$limit]);
-    return $stmt->fetchAll();
-}
-
-function getContentsByCategory($pdo, $categoryId) {
-    $stmt = $pdo->prepare(
-        "SELECT c.*, cat.name AS category_name
-         FROM contents c
-         LEFT JOIN categories cat ON c.category_id = cat.id
-         WHERE c.category_id = ? OR cat.parent_id = ?
-         ORDER BY c.uploaded_at DESC"
-    );
-    $stmt->execute([$categoryId, $categoryId]);
-    return $stmt->fetchAll();
-}
 function tamzContent($main_id, $sub_id) {
     $conn = getConnect();
 
@@ -46,4 +23,41 @@ function tamzContent($main_id, $sub_id) {
 
     mysqli_close($conn);
 }
+
+///////////////////////////////////////////////////////////
+
+function searchResult($choice, $keyword) {
+    $conn = getConnect();
+
+    $keyword = mysqli_real_escape_string($conn, $keyword);
+    $filter_search = isset($_SESSION['filter_search']) ? (int)$_SESSION['filter_search'] : 0;
+
+    $base_sql = "SELECT contents.title, contents.download_count, contents.file_path 
+                 FROM contents 
+                 LEFT JOIN categories ON contents.category_id = categories.id 
+                 WHERE contents.title LIKE '%$keyword%'";
+
+    if ($choice == 0) {
+        $sql = $base_sql;
+    } else if ($choice == 1) {
+        $sql = $base_sql . " AND (contents.category_id = $filter_search OR categories.parent_id = $filter_search)";
+    } else if ($choice == 2) {
+        $sql = $base_sql . " AND contents.category_id = $filter_search";
+    }
+
+    $result = mysqli_query($conn, $sql);
+    $data = array();
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+    }
+
+    mysqli_close($conn);
+    return $data;
+}
+
+
+
 ?>

@@ -14,9 +14,17 @@ if(!isset($_COOKIE["user_id"])) {
     <title>FTP Server Content</title>
     </head>
 <body>
+    <div id="divSF"></div>
+    <input type="text" id="searhBox" value="">
+    <button id='btnSearch'>Search</button>
+    <table>
+        <tbody id="tbod">
+
+        </tbody>
+    </table>
    
     
-
+<!-- ////////////////////////////////////////////////////////////////////////// -->
 <div class="main-container">
     <div id="sidebar" class="sidebar">
         <h3>Categories</h3>
