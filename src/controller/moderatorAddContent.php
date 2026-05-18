@@ -36,32 +36,19 @@ if ($categoryId <= 0 || !getCategoryById($pdo, $categoryId)) {
     $errors['category_id'] = 'Please select a valid category.';
 }
 
-if (empty($_FILES['content_file']) || !isset($_FILES['content_file']['error']) || $_FILES['content_file']['error'] === UPLOAD_ERR_NO_FILE) {
+$file = $_FILES['content_file'] ?? null;
+if (!$file || $file['error'] === UPLOAD_ERR_NO_FILE) {
     $errors['content_file'] = 'A file is required.';
-} elseif ($_FILES['content_file']['error'] !== UPLOAD_ERR_OK) {
-    $errors['content_file'] = 'File upload failed (code ' . $_FILES['content_file']['error'] . ').';
+} elseif ($file['error'] !== UPLOAD_ERR_OK) {
+    $errors['content_file'] = 'File upload failed (code ' . $file['error'] . ').';
+} elseif ($file['size'] > 200 * 1024 * 1024) {
+    $errors['content_file'] = 'File must be under 200 MB.';
 } else {
-    $maxBytes = 200 * 1024 * 1024;
-    if ($_FILES['content_file']['size'] > $maxBytes) {
-        $errors['content_file'] = 'File must be under 200 MB.';
-    }
-    $allowedExt = ['mp4', 'mkv', 'avi', 'mov', 'pdf', 'zip', 'rar', '7z', 'exe', 'iso', 'mp3'];
-    $allowedMime = [
-        'video/mp4', 'video/x-matroska', 'video/x-msvideo', 'video/quicktime',
-        'application/pdf', 'application/zip', 'application/x-zip-compressed',
-        'application/x-rar-compressed', 'application/vnd.rar', 'application/x-7z-compressed',
-        'application/x-msdownload', 'application/octet-stream', 'application/x-iso9660-image',
-        'audio/mpeg',
-    ];
-    $ext = strtolower(pathinfo($_FILES['content_file']['name'], PATHINFO_EXTENSION));
-    if (empty($errors['content_file']) && !in_array($ext, $allowedExt, true)) {
+    $parts = explode('.', $file['name']);
+    $ext   = strtolower($parts[count($parts) - 1]);
+    $allowed = ['mp4', 'mkv', 'avi', 'mov', 'pdf', 'zip', 'rar', '7z', 'exe', 'iso', 'mp3'];
+    if (!in_array($ext, $allowed, true)) {
         $errors['content_file'] = 'File type .' . $ext . ' is not allowed.';
-    }
-    if (empty($errors['content_file'])) {
-        $mime = function_exists('mime_content_type') ? mime_content_type($_FILES['content_file']['tmp_name']) : '';
-        if ($mime && !in_array($mime, $allowedMime, true)) {
-            $errors['content_file'] = 'File MIME type "' . $mime . '" is not allowed.';
-        }
     }
 }
 
@@ -74,10 +61,11 @@ if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0777, true);
 }
 
-$ext      = strtolower(pathinfo($_FILES['content_file']['name'], PATHINFO_EXTENSION));
+$parts    = explode('.', $file['name']);
+$ext      = strtolower($parts[count($parts) - 1]);
 $filename = uniqid('content_', true) . '.' . $ext;
 
-if (!move_uploaded_file($_FILES['content_file']['tmp_name'], $uploadDir . $filename)) {
+if (!move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
     respond(false, ['error' => 'Failed to save uploaded file.']);
 }
 
