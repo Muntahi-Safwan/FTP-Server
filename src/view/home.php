@@ -12,15 +12,17 @@ if(!isset($_COOKIE["user_id"])) {
 <head>
     <meta charset="UTF-8">
     <title>FTP Server Content</title>
+    <link rel="stylesheet" href="../public/home.css">
     </head>
 <body>
-    <a href="" id="login"><b>Log In</b></a> || 
-    <a href="ContentReq.html" id="Conreq">Request Content</a> ||
-    <a href="" id="req">Check Request</a>
+    <div id="headPart">
+        <a href="" id="login"><b>Log In</b></a> 
+        <a href="ContentReq.html" id="Conreq">Request Content</a> 
+        <a href="reqShow.html" id="req">Check Request</a>
 
     <div id="divSF"></div>
+    </div>
     <input type="text" id="searhBox" value="">
-    <button id='btnSearch'>Search</button>
     <table>
         <tbody id="tbod">
 

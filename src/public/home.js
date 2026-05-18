@@ -47,15 +47,10 @@ document.addEventListener("DOMContentLoaded", function() {
 let btnSet = document.getElementById('btnSearch');
 
 // STEP 1: Button is clicked
-btnSet.onclick = function() {
-    var keyword = document.getElementById('searhBox').value.trim();
-    
-    if (keyword === "") {
-        alert("Empty textbox");
-        return;
-    }
-    
-    // Pass the keyword to the session setter
+var searchBox = document.getElementById('searhBox');
+
+searchBox.onkeyup = function() {
+    var keyword = searchBox.value.trim();
     sessionSet(keyword);
 };
 
@@ -78,7 +73,10 @@ function sessionSet(keyword) {
         sessionXhr.send("id=" + id);
     } else {
         // If no radio is selected, just go straight to the search
-        performSearch(keyword);
+        if (keyword != ""){
+            performSearch(keyword);
+        }
+        
     }
 }
 
@@ -109,6 +107,8 @@ function performSearch(keyword) {
                 ank.innerText = "download";
 
                 tdPath.appendChild(ank);
+                tr.appendChild(tdPath);
+                
                 
                 tr.appendChild(tdTitle);
                 tr.appendChild(tdPath);
@@ -136,15 +136,57 @@ function loadMainCategory(mainId) {
         }
     };
     xhrTabs.send();
-
+    ///////////////////////
     var xhrContent = new XMLHttpRequest();
     xhrContent.open("GET", "../controller/get_contents.php?main_id=" + mainId, true);
+
     xhrContent.onload = function() {
         if (xhrContent.status === 200) {
-            contentDiv.innerHTML = xhrContent.responseText;
+            var data = JSON.parse(xhrContent.responseText);
+            
+            contentDiv.innerHTML = "";
+            
+            if (data.length > 0) {
+                var table = document.createElement("table");
+                
+                var tbody = document.createElement("tbody");
+                
+                for (var i = 0; i < data.length; i++) {
+                    var tr = document.createElement("tr");
+                    
+                    var tdTitle = document.createElement("td");
+                    tdTitle.textContent = data[i].title;
+                    tr.appendChild(tdTitle);
+                    
+                    var tdDesc = document.createElement("td");
+                    tdDesc.textContent = data[i].description;
+                    tr.appendChild(tdDesc);
+                    
+                    var tdPath = document.createElement("td");
+                    var ank = document.createElement("a");
+                    ank.href = "../controller/downloadd.php?src=" + encodeURIComponent(data[i].file_path);
+                    ank.innerText = "download";
+                    
+                    tdPath.appendChild(ank);
+                    tr.appendChild(tdPath);
+                    
+                    tbody.appendChild(tr);
+                }
+                
+                table.appendChild(tbody);
+                contentDiv.appendChild(table);
+            } else {
+                var noData = document.createElement("p");
+                noData.textContent = "No contents available in this category.";
+                contentDiv.appendChild(noData);
+            }
         }
     };
+
     xhrContent.send();
+
+
+    ////////////
 }
 
 
@@ -153,10 +195,52 @@ function filterBySub(subId) {
 
     var xhrContent = new XMLHttpRequest();
     xhrContent.open("GET", "../controller/get_contents.php?sub_id=" + subId, true);
+
     xhrContent.onload = function() {
         if (xhrContent.status === 200) {
-            contentDiv.innerHTML = xhrContent.responseText;
+            var data = JSON.parse(xhrContent.responseText);
+            
+            contentDiv.innerHTML = "";
+            
+            if (data.length > 0) {
+                var table = document.createElement("table");
+                //table.border = "1"; 
+                
+                var tbody = document.createElement("tbody");
+                
+                for (var i = 0; i < data.length; i++) {
+                    var tr = document.createElement("tr");
+                    
+                    var tdTitle = document.createElement("td");
+                    tdTitle.textContent = data[i].title;
+                    tr.appendChild(tdTitle);
+                    
+                    var tdDesc = document.createElement("td");
+                    tdDesc.textContent = data[i].description;
+                    tr.appendChild(tdDesc);
+                    
+                    var tdPath = document.createElement("td");
+                    var ank = document.createElement("a");
+                    ank.href = "../controller/downloadd.php?src=" + encodeURIComponent(data[i].file_path);
+                    ank.innerText = "download";
+                    
+                    tdPath.appendChild(ank);
+                    tr.appendChild(tdPath);
+                    
+                    tbody.appendChild(tr);
+                }
+                
+                table.appendChild(tbody);
+                contentDiv.appendChild(table);
+            } else {
+                var noData = document.createElement("p");
+                noData.textContent = "No contents available in this category.";
+                contentDiv.appendChild(noData);
+            }
         }
     };
+
     xhrContent.send();
+
+            
 }

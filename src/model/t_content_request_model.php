@@ -14,4 +14,43 @@
         mysqli_close($conn);
     }
 
+    function showRequest(){
+        $conn = getConnect();
+
+        // Select all data from your content_requests table
+        $sql = "SELECT * FROM content_requests";
+        $result = mysqli_query($conn, $sql);
+
+        $data = array();
+
+        if ($result && mysqli_num_rows($result) > 0) {
+            while($row = mysqli_fetch_assoc($result)) {
+                $data[] = $row;
+            }
+        }
+        return $data;
+
+        mysqli_close($conn);
+    }
+    function acceptRequest($id){
+         $conn = getConnect();
+    
+        // Update the status to 'fulfilled'
+        $sql = "UPDATE content_requests SET status = 'fulfilled' WHERE id = '$id'";
+        mysqli_query($conn, $sql);
+        
+        mysqli_close($conn);
+
+    }
+    function rejectRequest($id){
+        $conn = getConnect();
+    
+        // Update the status to 'rejected'
+        $sql = "UPDATE content_requests SET status = 'rejected' WHERE id = '$id'";
+        mysqli_query($conn, $sql);
+        
+        mysqli_close($conn);
+        
+    }
+
 ?>

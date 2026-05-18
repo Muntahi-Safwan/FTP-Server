@@ -1,7 +1,4 @@
 <?php
-function getConnect() {
-    return mysqli_connect('localhost', 'root', '', 'ftp_server');
-}
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];

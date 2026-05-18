@@ -1,9 +1,5 @@
 <?php
 
-function getConnect() {
-    return mysqli_connect('localhost', 'root', '', 'ftp_server');
-}
-
 $conn = getConnect();
 
 // Select all data from your content_requests table
