@@ -112,6 +112,9 @@ switch ($page) {
         require_once __DIR__ . '/../src/view/adminView.php';
         break;
 
+    case 'modView':
+        requireRole('moderator');
+        require_once __DIR__ . '../../src/view/adminView.php';
     // ── Admin Routes ─────────────────────────────────
 
     case 'admin/dashboard':
