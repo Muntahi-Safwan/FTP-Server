@@ -18,7 +18,7 @@ $currentFile = basename($_SERVER['PHP_SELF']);
 
     <a href="content_list_view.php" class="<?= $currentFile === 'content_list_view.php' ? 'active' : '' ?>">
         <svg viewBox="0 0 24 24"><path d="M3 7h18"/><path d="M3 12h18"/><path d="M3 17h12"/></svg>
-        My Contents
+        All Contents
     </a>
 
     <div class="sidebar-section">Members</div>
