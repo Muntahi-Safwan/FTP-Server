@@ -3,10 +3,10 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 session_start();
 
-require_once __DIR__ . '/../src/config/db.php';
-require_once __DIR__ . '/../src/controller/auth_controller.php';
-require_once __DIR__ . '/../src/controller/home_controller.php';
-require_once __DIR__ . '/../src/controller/profile_controller.php';
+require_once __DIR__ . '../src/config/db.php';
+require_once __DIR__ . '../src/controller/auth_controller.php';
+require_once __DIR__ . '../src/controller/home_controller.php';
+require_once __DIR__ . '../src/controller/profile_controller.php';
 
 
 
