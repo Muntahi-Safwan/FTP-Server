@@ -44,11 +44,11 @@ function addModerator() {
     $password = $_POST['password'] ?? '';
     $confirm  = $_POST['confirm'] ?? '';
 
-    if (empty($name))                              $errors[] = "Name required";
+    if (empty($name))                               $errors[] = "Name required";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Invalid email";
-    if (strlen($password) < 8)                     $errors[] = "Password min 8 characters";
-    if ($password !== $confirm)                    $errors[] = "Passwords do not match";
-    if (emailExists($pdo, $email))                 $errors[] = "Email already registered";
+    if (strlen($password) < 8)                      $errors[] = "Password min 8 characters";
+    if ($password !== $confirm)                     $errors[] = "Passwords do not match";
+    if (emailExists($pdo, $email))                  $errors[] = "Email already registered";
 
     if (empty($errors)) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
@@ -96,8 +96,8 @@ function handleAddContent() {
     $catId      = (int)($_POST['category_id'] ?? 0);
     $uploaderId = $_SESSION['user_id'];
 
-    if (empty($title))  $errors[] = "Title required";
-    if ($catId <= 0)    $errors[] = "Select a valid category";
+    if (empty($title)) $errors[] = "Title required";
+    if ($catId <= 0)   $errors[] = "Select a valid category";
 
     $filePath = '';
     if (isset($_FILES['content_file']) && $_FILES['content_file']['error'] === UPLOAD_ERR_OK) {
@@ -105,11 +105,11 @@ function handleAddContent() {
         $allowedExt = ['mp4','iso','exe','zip','pdf','jpg','png'];
         $ext        = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-        if (!in_array($ext, $allowedExt))        $errors[] = "Extension not allowed";
-        if ($file['size'] > 50 * 1024 * 1024)    $errors[] = "File too large (max 50MB)";
+        if (!in_array($ext, $allowedExt))      $errors[] = "Extension not allowed";
+        if ($file['size'] > 50 * 1024 * 1024) $errors[] = "File too large (max 50MB)";
 
         if (empty($errors)) {
-            $safeName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file['name']);
+            $safeName  = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file['name']);
             $uploadDir = __DIR__ . '/../../public/uploads/contents/';
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
             $target = $uploadDir . $safeName;
@@ -123,7 +123,7 @@ function handleAddContent() {
     }
 
     if (empty($errors)) {
-        addContent($pdo, $title, $desc, $filePath, $catId, $uploaderId);
+        createContent($pdo, $title, $desc, $catId, $filePath, $uploaderId);
         $_SESSION['flash'] = "Content uploaded!";
         header("Location: index.php?page=admin/contents");
     } else {
@@ -136,8 +136,18 @@ function handleAddContent() {
 function showEditContentForm() {
     adminGuard();
     global $pdo;
-    $id      = (int)($_GET['id'] ?? 0);
-    $content = getContentById($pdo, $id);
+    $id = (int)($_GET['id'] ?? 0);
+
+    // Direct query — no uploader restriction for admin
+    $stmt = $pdo->prepare("
+        SELECT c.*, cat.name AS category_name
+        FROM contents c
+        LEFT JOIN categories cat ON c.category_id = cat.id
+        WHERE c.id = ?
+    ");
+    $stmt->execute([$id]);
+    $content = $stmt->fetch();
+
     if (!$content) {
         $_SESSION['errors'] = ["Content not found"];
         header("Location: index.php?page=admin/contents");
@@ -150,10 +160,10 @@ function showEditContentForm() {
 function handleEditContent() {
     adminGuard();
     global $pdo;
-    $id    = (int)($_POST['id'] ?? 0);
-    $title = trim($_POST['title'] ?? '');
-    $desc  = trim($_POST['description'] ?? '');
-    $catId = (int)($_POST['category_id'] ?? 0);
+    $id     = (int)($_POST['id'] ?? 0);
+    $title  = trim($_POST['title'] ?? '');
+    $desc   = trim($_POST['description'] ?? '');
+    $catId  = (int)($_POST['category_id'] ?? 0);
     $errors = [];
 
     if (empty($title)) $errors[] = "Title required";
@@ -174,9 +184,12 @@ function handleEditContent() {
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
             $target = $uploadDir . $safeName;
             if (move_uploaded_file($file['tmp_name'], $target)) {
-                $old = getContentById($pdo, $id);
-                if ($old) {
-                    $oldPath = __DIR__ . '/../../public/' . $old['file_path'];
+                // Old file delete
+                $oldStmt = $pdo->prepare("SELECT file_path FROM contents WHERE id = ?");
+                $oldStmt->execute([$id]);
+                $oldFile = $oldStmt->fetchColumn();
+                if ($oldFile) {
+                    $oldPath = __DIR__ . '/../../public/' . $oldFile;
                     if (file_exists($oldPath)) unlink($oldPath);
                 }
                 $filePath = 'uploads/contents/' . $safeName;
@@ -187,7 +200,13 @@ function handleEditContent() {
     }
 
     if (empty($errors)) {
-        updateContent($pdo, $id, $title, $desc, $catId, $filePath);
+        if ($filePath) {
+            $stmt = $pdo->prepare("UPDATE contents SET title=?, description=?, category_id=?, file_path=? WHERE id=?");
+            $stmt->execute([$title, $desc, $catId, $filePath, $id]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE contents SET title=?, description=?, category_id=? WHERE id=?");
+            $stmt->execute([$title, $desc, $catId, $id]);
+        }
         $_SESSION['flash'] = "Content updated!";
     } else {
         $_SESSION['errors'] = $errors;
@@ -199,10 +218,28 @@ function handleEditContent() {
 function deleteContentAjax() {
     adminGuard();
     global $pdo;
-    $id     = (int)($_POST['id'] ?? 0);
-    $result = deleteContentById($pdo, $id);
     header('Content-Type: application/json');
-    echo json_encode(['success' => $result]);
+
+    $id = (int)($_POST['id'] ?? 0);
+    if ($id <= 0) {
+        echo json_encode(['success' => false]);
+        exit;
+    }
+
+    // File server theke delete koro
+    $stmt = $pdo->prepare("SELECT file_path FROM contents WHERE id = ?");
+    $stmt->execute([$id]);
+    $filePath = $stmt->fetchColumn();
+    if ($filePath) {
+        $fullPath = __DIR__ . '/../../public/' . $filePath;
+        if (file_exists($fullPath)) unlink($fullPath);
+    }
+
+    // DB theke delete — admin can delete any content
+    $stmt = $pdo->prepare("DELETE FROM contents WHERE id = ?");
+    $ok   = $stmt->execute([$id]);
+
+    echo json_encode(['success' => $ok]);
     exit;
 }
 
