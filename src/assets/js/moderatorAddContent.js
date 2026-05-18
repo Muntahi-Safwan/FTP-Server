@@ -6,6 +6,11 @@
 
     const parentSelect = document.getElementById('parentCategoryId');
     const subSelect    = document.getElementById('subCategoryId');
+    const fileInput    = document.getElementById('contentFile');
+    const fileDrop     = document.getElementById('fileDrop');
+    const fileSelected = document.getElementById('fileSelected');
+    const fileSelectedName = document.getElementById('fileSelectedName');
+    const fileSelectedClear = document.getElementById('fileSelectedClear');
 
     function showResponse(message, type) {
         const box = document.getElementById('response');
@@ -37,7 +42,7 @@
         subSelect.innerHTML = '<option value="">Loading…</option>';
 
         if (!parentId) {
-            subSelect.innerHTML = '<option value="">-- Select a category first --</option>';
+            subSelect.innerHTML = '<option value="">Select a category first</option>';
             return;
         }
 
@@ -65,6 +70,53 @@
         }
     });
 
+    // ── File drag & drop UI ─────────────────────────
+    function showFile(name) {
+        if (!fileSelected || !fileSelectedName) return;
+        fileSelectedName.textContent = name;
+        fileSelected.style.display = 'flex';
+    }
+
+    function hideFile() {
+        if (!fileSelected) return;
+        fileSelected.style.display = 'none';
+        fileInput.value = '';
+    }
+
+    if (fileInput && fileDrop) {
+        fileInput.addEventListener('change', function () {
+            if (this.files[0]) showFile(this.files[0].name);
+            else hideFile();
+        });
+
+        if (fileSelectedClear) {
+            fileSelectedClear.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                hideFile();
+            });
+        }
+
+        ['dragover', 'dragenter'].forEach(ev => {
+            fileDrop.addEventListener(ev, e => { e.preventDefault(); fileDrop.classList.add('dragover'); });
+        });
+
+        ['dragleave', 'drop'].forEach(ev => {
+            fileDrop.addEventListener(ev, () => fileDrop.classList.remove('dragover'));
+        });
+
+        fileDrop.addEventListener('drop', e => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+                showFile(file.name);
+            }
+        });
+    }
+
     // ── Form submit ────────────────────────────────
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -74,7 +126,7 @@
         const description = document.getElementById('description').value.trim();
         const parentId    = parentSelect.value;
         const subValue    = subSelect.value;
-        const fileInput   = document.getElementById('contentFile');
+        const file        = fileInput.files[0];
 
         // Client-side validation
         let firstError = null;
@@ -82,10 +134,22 @@
         if (title.length > 255) { setFieldError('title', 'Title must be ≤ 255 chars.'); firstError ||= 'title'; }
         if (!description) { setFieldError('description', 'Description is required.'); firstError ||= 'description'; }
         if (!parentId) { setFieldError('category_id', 'Please pick a category.'); firstError ||= 'category_id'; }
-        if (!fileInput.files || fileInput.files.length === 0) {
+
+        const allowed = ['mp4','mkv','avi','mov','pdf','zip','rar','7z','exe','iso','mp3'];
+        if (!file) {
             setFieldError('content_file', 'Please choose a file.');
             firstError ||= 'content_file';
+        } else {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!allowed.includes(ext)) {
+                setFieldError('content_file', 'File type not allowed.');
+                firstError ||= 'content_file';
+            } else if (file.size > 200 * 1024 * 1024) {
+                setFieldError('content_file', 'File exceeds 200MB limit.');
+                firstError ||= 'content_file';
+            }
         }
+
         if (firstError) {
             showResponse('Please fix the highlighted errors.', 'error');
             return;
@@ -98,7 +162,7 @@
         fd.append('title', title);
         fd.append('description', description);
         fd.append('category_id', categoryId);
-        fd.append('content_file', fileInput.files[0]);
+        fd.append('content_file', file);
 
         showResponse('Uploading…', 'info');
 
@@ -116,8 +180,9 @@
             if (res.ok && data.ok) {
                 showResponse(data.message || 'Content added successfully.', 'success');
                 form.reset();
-                subSelect.innerHTML = '<option value="">-- Select a category first --</option>';
+                subSelect.innerHTML = '<option value="">Select a category first</option>';
                 subSelect.disabled = true;
+                hideFile();
                 clearResponse();
             } else {
                 if (data.errors && typeof data.errors === 'object') {
