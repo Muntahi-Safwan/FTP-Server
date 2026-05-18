@@ -28,19 +28,13 @@ if ($id <= 0) {
     respond(false, ['error' => 'Invalid content id.']);
 }
 
-$uploaderId = (int) $_SESSION['user_id'];
-
 $content = getContentById($pdo, $id);
 if (!$content) {
     http_response_code(404);
     respond(false, ['error' => 'Content not found.']);
 }
-if ((int) $content['uploader_id'] !== $uploaderId) {
-    http_response_code(403);
-    respond(false, ['error' => 'You can only delete your own uploads.']);
-}
 
-$deleted = deleteContent($pdo, $id, $uploaderId);
+$deleted = deleteContentById($pdo, $id);
 if (!$deleted) {
     respond(false, ['error' => 'Failed to delete content.']);
 }

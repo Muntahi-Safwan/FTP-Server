@@ -14,3 +14,4 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'moderator') {
     header("Location: ../../public/index.php?page=login");
     exit;
 }
+?>
