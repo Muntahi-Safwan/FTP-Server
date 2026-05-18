@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "get_cat_list.php", true);
+    xhr.open("GET", "../controller/cat_list.php", true);
     
     xhr.onload = function() {
         if (xhr.status === 200) {
@@ -60,7 +60,7 @@ submitBtn.onclick = function() {
 
     // Set up the XMLHttpRequest
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "contentReqInsert.php", true);
+    xhr.open("POST", "../controller/contentReqInsert.php", true);
     
     // THIS is the exact header needed so PHP can read it via $_POST
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

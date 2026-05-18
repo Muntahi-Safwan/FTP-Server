@@ -12,7 +12,7 @@ if(!isset($_COOKIE["user_id"])) {
 <head>
     <meta charset="UTF-8">
     <title>FTP Server Content</title>
-    <link rel="stylesheet" href="../public/home.css">
+    <link rel="stylesheet" href="../asset/home.css">
     </head>
 <body>
     <div id="headPart">
@@ -51,7 +51,7 @@ if(!isset($_COOKIE["user_id"])) {
     </div>
 </div>
 
-<script src="../public/home.js"></script>
+<script src="../asset/home.js"></script>
 
 </body>
 </html>

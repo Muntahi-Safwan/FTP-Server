@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "getContentReq.php", true);
+    xhr.open("GET", "../controller/getContentReq.php", true);
     
     xhr.onload = function() {
         if (xhr.status === 200) {
@@ -41,14 +41,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 
                 var tdAccept = document.createElement("td"); 
                 var acpt = document.createElement("a");
-                acpt.href = "reqAccept.php?id=" + data[i].id;
+                acpt.href = "../controller/reqAccept.php?id=" + data[i].id;
                 acpt.innerText = 'ACCEPT';
                 tdAccept.appendChild(acpt); 
                 tr.appendChild(tdAccept);
                 
                 var tdReject = document.createElement("td");
                 var reject = document.createElement("a");
-                reject.href = "reqReject.php?id=" + data[i].id;
+                reject.href = "../controller/reqReject.php?id=" + data[i].id;
                 reject.innerText = 'REJECT';
                 tdReject.appendChild(reject);
                 tr.appendChild(tdReject);
