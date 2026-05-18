@@ -30,7 +30,6 @@ if(!isset($_COOKIE["user_id"])) {
     </table>
    
     
-<!-- ////////////////////////////////////////////////////////////////////////// -->
 <div class="main-container">
     <div id="sidebar" class="sidebar">
         <h3>Gallery</h3>

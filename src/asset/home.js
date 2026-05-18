@@ -1,8 +1,6 @@
-
-
 document.addEventListener("DOMContentLoaded", function() {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "../controller/getRadio.php", true); ////////////////////////////change
+    xhr.open("GET", "../controller/getRadio.php", true); 
     
     xhr.onload = function() {
         if (xhr.status === 200) {
@@ -46,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 let btnSet = document.getElementById('btnSearch');
 
-// STEP 1: Button is clicked
 var searchBox = document.getElementById('searhBox');
 
 searchBox.onkeyup = function() {
@@ -54,7 +51,6 @@ searchBox.onkeyup = function() {
     sessionSet(keyword);
 };
 
-// STEP 2: Set the session variable
 function sessionSet(keyword) {
     var selectedRadio = document.querySelector('input[name="category_radio"]:checked');
     
@@ -62,17 +58,15 @@ function sessionSet(keyword) {
         var id = selectedRadio.value;
         var sessionXhr = new XMLHttpRequest();
         
-        sessionXhr.open("POST", "../controller/set_session.php", true);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!change
+        sessionXhr.open("POST", "../controller/set_session.php", true);  
         sessionXhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         
         sessionXhr.onload = function() {
-            // Once the session is updated on the server, trigger the search
             performSearch(keyword);
         };
         
         sessionXhr.send("id=" + id);
     } else {
-        // If no radio is selected, just go straight to the search
         if (keyword != ""){
             performSearch(keyword);
         }
@@ -80,10 +74,9 @@ function sessionSet(keyword) {
     }
 }
 
-// STEP 3: Perform the search and build the table
 function performSearch(keyword) {
     var searchXhr = new XMLHttpRequest();
-    searchXhr.open("GET", "../controller/search.php?keyword=" + encodeURIComponent(keyword), true); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!change
+    searchXhr.open("GET", "../controller/search.php?keyword=" + encodeURIComponent(keyword), true); 
     
     searchXhr.onload = function() {
         if (searchXhr.status === 200) {
@@ -103,7 +96,7 @@ function performSearch(keyword) {
                 let tdPath = document.createElement("td");
                 let ank = document.createElement("a");
 
-                ank.href = `../controller/downloadd.php?src=${encodeURIComponent(data[i].file_path)}`; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!change
+                ank.href = `../controller/downloadd.php?src=${encodeURIComponent(data[i].file_path)}`; 
                 ank.innerText = "download";
 
                 tdPath.appendChild(ank);
@@ -122,7 +115,6 @@ function performSearch(keyword) {
     searchXhr.send();
 }
 
-///////////////////////////////////////////////////////////////////////////////////////
 
 function loadMainCategory(mainId) {
     var tabsDiv = document.getElementById("subcategory_tabs");
@@ -136,7 +128,7 @@ function loadMainCategory(mainId) {
         }
     };
     xhrTabs.send();
-    ///////////////////////
+
     var xhrContent = new XMLHttpRequest();
     xhrContent.open("GET", "../controller/get_contents.php?main_id=" + mainId, true);
 
@@ -184,9 +176,6 @@ function loadMainCategory(mainId) {
     };
 
     xhrContent.send();
-
-
-    ////////////
 }
 
 
@@ -204,7 +193,6 @@ function filterBySub(subId) {
             
             if (data.length > 0) {
                 var table = document.createElement("table");
-                //table.border = "1"; 
                 
                 var tbody = document.createElement("tbody");
                 
@@ -241,6 +229,4 @@ function filterBySub(subId) {
     };
 
     xhrContent.send();
-
-            
 }

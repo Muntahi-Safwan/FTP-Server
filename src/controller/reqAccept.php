@@ -7,7 +7,6 @@ if (isset($_GET['id'])) {
    
 }
 
-// Redirect back to the HTML file
 header("Location: ../view/reqShow.html");
-exit(); // Always use exit after a header redirect
+exit(); 
 ?>

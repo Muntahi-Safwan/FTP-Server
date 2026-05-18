@@ -24,7 +24,7 @@ function tamzContent($main_id, $sub_id) {
     mysqli_close($conn);
 }
 
-///////////////////////////////////////////////////////////
+
 
 function searchResult($choice, $keyword) {
     $conn = getConnect();

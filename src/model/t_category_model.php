@@ -15,7 +15,6 @@ require_once 'db.php';
         mysqli_close($conn);
     }
 
-    //////////////////////////////////////////////
 
 
     function isParentIdNull($category_id) {

@@ -43,34 +43,27 @@ submitBtn.onclick = function() {
         return; 
     }
 
-    // IP 
     let url = window.location.href;
     let arr = url.split("//");
     url = arr[1];
     arr = url.split("/");
     url = arr[0];
 
-    // Format the data perfectly for PHP's $_POST array
-    // encodeURIComponent ensures special characters (like spaces in the title) don't break the string
     var params = "title=" + encodeURIComponent(title) + 
                  "&category=" + encodeURIComponent(category) + 
                  "&message=" + encodeURIComponent(message) + 
                  "&requester_ip=" + encodeURIComponent(url) + 
                  "&status=pending";
 
-    // Set up the XMLHttpRequest
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "../controller/contentReqInsert.php", true);
     
-    // THIS is the exact header needed so PHP can read it via $_POST
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
     xhr.onload = function() {
         if (xhr.status == 200) {
-            // This will alert "The form has been submitted and inserted." from your PHP file
             alert(xhr.responseText); 
             
-            // Optional: clear out the fields so the user knows it worked
             document.getElementById("title").value = "";
             document.getElementById("messtege").value = "";
         } else {
@@ -78,6 +71,5 @@ submitBtn.onclick = function() {
         }
     };
 
-    // Send the formatted string
     xhr.send(params);
 };

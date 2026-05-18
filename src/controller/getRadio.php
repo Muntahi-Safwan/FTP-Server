@@ -1,5 +1,5 @@
 <?php
-//header('Content-Type: application/json');
+
 
 require('../model/t_category_model.php');
 

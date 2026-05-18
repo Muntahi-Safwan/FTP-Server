@@ -17,7 +17,7 @@
     function showRequest(){
         $conn = getConnect();
 
-        // Select all data from your content_requests table
+        
         $sql = "SELECT * FROM content_requests";
         $result = mysqli_query($conn, $sql);
 
@@ -35,7 +35,7 @@
     function acceptRequest($id){
          $conn = getConnect();
     
-        // Update the status to 'fulfilled'
+        
         $sql = "UPDATE content_requests SET status = 'fulfilled' WHERE id = '$id'";
         mysqli_query($conn, $sql);
         
@@ -45,7 +45,7 @@
     function rejectRequest($id){
         $conn = getConnect();
     
-        // Update the status to 'rejected'
+        
         $sql = "UPDATE content_requests SET status = 'rejected' WHERE id = '$id'";
         mysqli_query($conn, $sql);
         
