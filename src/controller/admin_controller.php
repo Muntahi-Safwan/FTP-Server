@@ -123,7 +123,7 @@ function handleAddContent() {
     }
 
     if (empty($errors)) {
-        addContent($pdo, $title, $desc, $filePath, $catId, $uploaderId);
+        createContent($pdo, $title, $desc, $catId, $filePath, $uploaderId);
         $_SESSION['flash'] = "Content uploaded!";
         header("Location: index.php?page=admin/contents");
     } else {
@@ -187,7 +187,8 @@ function handleEditContent() {
     }
 
     if (empty($errors)) {
-        updateContent($pdo, $id, $title, $desc, $catId, $filePath);
+        $stmt = $pdo->prepare("UPDATE contents SET title=?, description=?, category_id=?, file_path=COALESCE(?, file_path) WHERE id=?");
+$stmt->execute([$title, $desc, $catId, $filePath, $id]);
         $_SESSION['flash'] = "Content updated!";
     } else {
         $_SESSION['errors'] = $errors;
@@ -200,7 +201,7 @@ function deleteContentAjax() {
     adminGuard();
     global $pdo;
     $id     = (int)($_POST['id'] ?? 0);
-    $result = deleteContentById($pdo, $id);
+    $result = deleteContent($pdo, $id, 1);
     header('Content-Type: application/json');
     echo json_encode(['success' => $result]);
     exit;
