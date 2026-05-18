@@ -5,8 +5,7 @@ require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../model/content_model.php';
 require_once __DIR__ . '/../../model/category_model.php';
 
-$uploaderId = (int) $_SESSION['user_id'];
-$contents   = getContentsByUploader($pdo, $uploaderId);
+$contents   = getAllContents($pdo);
 $categories = getTopLevelCategories($pdo);
 $csrf       = csrf_token();
 ?>
@@ -16,7 +15,7 @@ $csrf       = csrf_token();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<?= htmlspecialchars($csrf) ?>">
-    <title>My Contents — FTP Server</title>
+    <title>All Contents — FTP Server</title>
     <link rel="stylesheet" href="../../assets/css/moderator.css">
 </head>
 <body>
@@ -27,8 +26,8 @@ $csrf       = csrf_token();
     <main class="main-content">
         <header class="page-header">
             <div>
-                <h1>My Uploaded Contents</h1>
-                <p class="lead">Search, filter, and manage the files you've contributed to the server.</p>
+                <h1>All Uploaded Contents</h1>
+                <p class="lead">Search, filter, and manage all files on the server.</p>
             </div>
             <a href="content_add_view.php" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -55,6 +54,7 @@ $csrf       = csrf_token();
                         <th>ID</th>
                         <th>Title</th>
                         <th>Category</th>
+                        <th>Uploader</th>
                         <th>Downloads</th>
                         <th>Uploaded At</th>
                         <th>File</th>
@@ -67,20 +67,21 @@ $csrf       = csrf_token();
                         <td><?= (int)$c['id'] ?></td>
                         <td><?= htmlspecialchars($c['title'] ?? '') ?></td>
                         <td data-category="<?= htmlspecialchars($c['category_name'] ?? '') ?>"><?= htmlspecialchars($c['category_name'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($c['uploader_name'] ?? 'Unknown') ?></td>
                         <td><?= (int)($c['download_count'] ?? 0) ?></td>
                         <td><?= htmlspecialchars($c['uploaded_at'] ?? '') ?></td>
                         <td>
                             <a href="../../../public/<?= htmlspecialchars($c['file_path'] ?? '') ?>" target="_blank" rel="noopener">View</a>
                         </td>
                         <td>
-                            <button class="btn btn-danger btn-sm" onclick="return deleteContent(<?= (int)$c['id'] ?>)">Delete</button>
+                            <button class="btn btn-danger btn-sm" onclick="return deleteContent(<?= (int)$c['id'] ?>)" title="Delete this content">Delete</button>
                         </td>
                     </tr>
                     <?php endforeach; else: ?>
                     <tr>
-                        <td colspan="7" class="empty-state">
+                        <td colspan="8" class="empty-state">
                             <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.35; margin-bottom:12px;"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7l-2-2H5a2 2 0 0 0-2 2z"/></svg>
-                            <div>No contents uploaded yet. <a href="content_add_view.php">Add your first one</a>.</div>
+                            <div>No contents found. <a href="content_add_view.php">Add the first one</a>.</div>
                         </td>
                     </tr>
                     <?php endif; ?>

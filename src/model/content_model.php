@@ -87,6 +87,13 @@ function deleteContent($pdo, $id, $uploaderId)
     return $stmt->rowCount() > 0;
 }
 
+function deleteContentById($pdo, $id)
+{
+    $stmt = $pdo->prepare("DELETE FROM contents WHERE id = ?");
+    $stmt->execute([$id]);
+    return $stmt->rowCount() > 0;
+}
+
 function getContentsByUploader($pdo, $uploaderId, $filters = [])
 {
     $sql = "SELECT c.*, cat.name AS category_name
