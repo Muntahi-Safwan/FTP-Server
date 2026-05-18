@@ -70,7 +70,7 @@ switch ($page) {
 
     case 'modView':
         requireRole('moderator');
-        require_once __DIR__ . '/../src/view/adminView.php';
+        require_once __DIR__ . '../../src/view/adminView.php';
         break;
     case 'home':
     default:
