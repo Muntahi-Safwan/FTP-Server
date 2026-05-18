@@ -167,7 +167,7 @@
         pass1.addEventListener('input', checkMatch);
         pass2.addEventListener('input', checkMatch);
 
-        // ── 2. AJAX email check using XMLHttpRequest (criteria #9) ──────
+        // ── 2. AJAX email check using XMLHttpRequest
         var emailInput = document.getElementById('emailInput');
         var emailStatus = document.getElementById('emailStatus');
         var emailTimer;
