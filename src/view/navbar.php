@@ -36,6 +36,7 @@ if (strpos($script, '/src/view/moderator/') !== false) {
         <?php else: ?>
             <!-- Guest/Member: browse only, no login link -->
             <a href="<?= htmlspecialchars($base) ?>?page=home" style="color:#fff; text-decoration:none;">Home</a>
+            <a href="<?= htmlspecialchars($base) ?>?page=homePage" style="color:#fff; text-decoration:none;">Explore More</a>
             <a href="<?= htmlspecialchars($base) ?>?page=login"
                 style="color:#fff; text-decoration:none; font-size:12px;">
                 Staff Login
