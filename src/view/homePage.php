@@ -16,9 +16,9 @@ if(!isset($_COOKIE["user_id"])) {
     </head>
 <body>
     <div id="headPart">
-        <a href="" id="login"><b>Log In</b></a> 
+        <a href="login.php" id="login"><b>Log In</b></a> 
         <a href="ContentReq.html" id="Conreq">Request Content</a> 
-        <a href="reqShow.html" id="req">Check Request</a>
+        <a href="reqShow.php" id="req">Check Request</a>
 
     <div id="divSF"></div>
     </div>
