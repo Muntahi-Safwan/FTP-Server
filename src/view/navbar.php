@@ -21,12 +21,14 @@ if (strpos($script, '/src/view/moderator/') !== false) {
 
         <?php if ($role === 'admin'): ?>
             <a href="<?= htmlspecialchars($base) ?>?page=home" style="color:#fff; text-decoration:none;">Home</a>
+            <a href="<?= htmlspecialchars($base) ?>?page=homePage" style="color:#fff; text-decoration:none;">Explore More</a>
             <a href="<?= htmlspecialchars($base) ?>?page=profile" style="color:#fff; text-decoration:none;">Profile</a>
             <a href="<?= htmlspecialchars($base) ?>?page=admin/dashboard" style="color:#e94560; text-decoration:none;">Admin Panel</a>
             <a href="<?= htmlspecialchars($base) ?>?page=logout" style="color:#aaa;  text-decoration:none;">Logout</a>
 
         <?php elseif ($role === 'moderator'): ?>
             <a href="<?= htmlspecialchars($base) ?>?page=home" style="color:#fff; text-decoration:none;">Home</a>
+            <a href="<?= htmlspecialchars($base) ?>?page=homePage" style="color:#fff; text-decoration:none;">Explore More</a>
             <a href="<?= htmlspecialchars($base) ?>?page=profile" style="color:#fff; text-decoration:none;">Profile</a>
             <a href="<?= htmlspecialchars($base) ?>?page=moderator" style="color:#e94560; text-decoration:none;">Mod Panel</a>
             <a href="<?= htmlspecialchars($base) ?>?page=logout" style="color:#aaa;  text-decoration:none;">Logout</a>

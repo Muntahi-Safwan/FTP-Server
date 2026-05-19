@@ -176,8 +176,9 @@ switch ($page) {
     case 'moderator':
         requireRole('moderator');
         header('Location: ../src/view/moderator/dashboard_view.php');
-        exit;
-
+    case 'homePage':
+        require_once __DIR__ . '/../src/view/homePage.php';
+        break;
     case 'home':
     default:
         showHome($pdo);
