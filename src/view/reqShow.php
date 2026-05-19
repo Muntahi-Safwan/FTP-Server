@@ -1,3 +1,9 @@
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin' || $_SESSION['role'] !== 'moderator') {
+        header("Location: homePage.php");
+        exit;
+    }
+ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
